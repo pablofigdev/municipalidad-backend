@@ -10,6 +10,12 @@ import { RegionModule } from './components/region/region.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { databaseConfig } from './config/database.config';
+import { DatabaseModule } from './database/database.module';
+import { EmpresaModule } from './components/empresa/empresa.module';
+import { DocumentoEmpresaModule } from './components/documento-empresa/documento-empresa.module';
+import { ProyectoModule } from './components/proyecto/proyecto.module';
+import { EmpleoVacanteModule } from './components/empleo-vacante/empleo-vacante.module';
+import { PostulacionProyectoModule } from './components/postulacion-proyecto/postulacion-proyecto.module';
 
 @Module({
   imports: [
@@ -21,12 +27,18 @@ import { databaseConfig } from './config/database.config';
       useFactory: (configService: ConfigService) => configService.get('database'),
       inject: [ConfigService],
     }),
+    DatabaseModule,
     PostulacionModule,
     DocumentoModule,
     UsuariosModule,
     PostulanteModule,
     ComunaModule,
     RegionModule,
+    EmpresaModule,
+    DocumentoEmpresaModule,
+    ProyectoModule,
+    EmpleoVacanteModule,
+    PostulacionProyectoModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Documento } from '../../documento/entities/documento.entity';
+import { Postulacion } from 'src/components/postulacion/entities/postulacion.entity';
 
 @Entity()
 export class Postulante {
@@ -34,9 +35,6 @@ export class Postulante {
   telefono: string;
 
   @Column()
-  fechaNacimiento: Date;
-
-  @Column()
   estado: string;
 
   @Column({nullable: true})
@@ -51,4 +49,7 @@ export class Postulante {
 
   @OneToMany(() => Documento, (documento) => documento.postulante)
   documentos: Documento[];
+
+  @OneToMany(() => Postulacion, (postulacion) => postulacion.postulante)
+  postulaciones: Postulacion[];
 }

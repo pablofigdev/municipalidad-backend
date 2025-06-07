@@ -1,34 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 import { ComunaService } from './comuna.service';
-import { CreateComunaDto } from './dto/create-comuna.dto';
-import { UpdateComunaDto } from './dto/update-comuna.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Public } from '../../common/decorators/public.decorator';
 
 @Controller('comuna')
+@ApiTags('Comuna')
+@Public()
 export class ComunaController {
   constructor(private readonly comunaService: ComunaService) {}
 
-  @Post()
-  create(@Body() createComunaDto: CreateComunaDto) {
-    return this.comunaService.create(createComunaDto);
-  }
+  
 
   @Get()
+  @ApiOperation({ summary: 'Obtener todas las comunas' })
   findAll() {
     return this.comunaService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.comunaService.findOne(+id);
+  @Get(':comunaId')
+  @ApiOperation({ summary: 'Obtener una comuna por su ID' })
+  findOne(@Param('comunaId') comunaId: number) {
+    return this.comunaService.findOne(comunaId);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateComunaDto: UpdateComunaDto) {
-    return this.comunaService.update(+id, updateComunaDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.comunaService.remove(+id);
-  }
+  
 }
