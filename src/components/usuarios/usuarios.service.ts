@@ -52,7 +52,7 @@ export class UsuariosService {
     }
   }
 
-  async findOne(usuarioID: number) {
+  async findOne(usuarioID: string) {
     try {
       const usuario = await this.usuarioRepository.findOne({
         where: { usuarioID },
@@ -112,7 +112,7 @@ export class UsuariosService {
     }
   }
 
-  async update(usuarioID: number, updateUsuarioDto: UpdateUsuarioDto) {
+  async update(usuarioID: string, updateUsuarioDto: UpdateUsuarioDto) {
     try {
       const usuario = await this.findOne(usuarioID);
       
@@ -138,7 +138,7 @@ export class UsuariosService {
     }
   }
 
-  async remove(usuarioID: number) {
+  async remove(usuarioID: string) {
     try {
       const usuario = await this.findOne(usuarioID);
       

@@ -1,7 +1,7 @@
-import { IsString, IsEmail, IsNotEmpty, IsEnum, IsOptional } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength, IsEnum, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateUsuarioDto {
+export class RegisterDto {
     @ApiProperty({ description: 'Nombre completo del usuario' })
     @IsString()
     @IsNotEmpty()
@@ -12,9 +12,10 @@ export class CreateUsuarioDto {
     @IsNotEmpty()
     email: string;
 
-    @ApiProperty({ description: 'Contraseña del usuario' })
+    @ApiProperty({ description: 'Contraseña (mínimo 6 caracteres)' })
     @IsString()
     @IsNotEmpty()
+    @MinLength(6)
     password: string;
 
     @ApiProperty({ 
@@ -26,14 +27,4 @@ export class CreateUsuarioDto {
     @IsEnum(['admin', 'rrhh', 'supervisor', 'usuario'])
     @IsOptional()
     rol?: string;
-
-    @ApiProperty({ 
-        description: 'Estado del usuario', 
-        enum: ['activo', 'inactivo', 'bloqueado'],
-        default: 'activo',
-        required: false 
-    })
-    @IsEnum(['activo', 'inactivo', 'bloqueado'])
-    @IsOptional()
-    estado?: string;
-}
+} 
