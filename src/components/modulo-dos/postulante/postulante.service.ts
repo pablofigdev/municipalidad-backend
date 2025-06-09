@@ -44,14 +44,23 @@ export class PostulanteService {
         );
       }
 
-      const postulante = this.postulanteRepository.create(createPostulanteDto);
+      // Separar documentos del DTO principal
+      const { documentos, ...postulanteData } = createPostulanteDto;
+
+      // Crear el postulante sin documentos
+      const postulante = this.postulanteRepository.create(postulanteData);
       const resultado = await this.postulanteRepository.save(postulante);
       
       this.logger.log(`Postulante creado con ID: ${resultado.postulanteID}`);
+      
+      // TODO: Aquí se pueden procesar los documentos con el servicio correspondiente
+      // Los documentos se manejarán por separado en el controlador o mediante otro servicio
+      
       return {
         status: 200,
         message: 'Postulante creado exitosamente',
-        data: resultado
+        data: resultado,
+        documentos: documentos || [] // Retornar los documentos para procesamiento posterior
       };
     } catch (error) {
       if (error instanceof HttpException) {
@@ -69,7 +78,7 @@ export class PostulanteService {
     try {
       this.logger.log('Obteniendo todos los postulantes');
       const postulantes = await this.postulanteRepository.find({
-        relations: ['documentos', 'postulaciones'],
+        relations: ['documentos', 'formulario'],
         order: { fechaRegistro: 'DESC' }
       });
       
@@ -94,7 +103,7 @@ export class PostulanteService {
       this.logger.log(`Buscando postulante con ID: ${id}`);
       const postulante = await this.postulanteRepository.findOne({
         where: { postulanteID: id },
-        relations: ['documentos', 'postulaciones']
+        relations: ['documentos', 'formulario']
       });
 
       if (!postulante) {
@@ -139,14 +148,17 @@ export class PostulanteService {
         );
       }
 
+      // Separar documentos del DTO de actualización si existen
+      const { documentos, ...postulanteData } = updatePostulanteDto;
+
       // Si se actualiza RUT, verificar que no exista en otro postulante
-      if (updatePostulanteDto.rut && updatePostulanteDto.rut !== postulante.rut) {
+      if (postulanteData.rut && postulanteData.rut !== postulante.rut) {
         const existeRUT = await this.postulanteRepository.findOne({
-          where: { rut: updatePostulanteDto.rut }
+          where: { rut: postulanteData.rut }
         });
 
         if (existeRUT) {
-          this.logger.warn(`RUT ya existe: ${updatePostulanteDto.rut}`);
+          this.logger.warn(`RUT ya existe: ${postulanteData.rut}`);
           throw new HttpException(
             'El RUT ya está registrado',
             HttpStatus.CONFLICT
@@ -155,13 +167,13 @@ export class PostulanteService {
       }
 
       // Si se actualiza email, verificar que no exista en otro postulante
-      if (updatePostulanteDto.email && updatePostulanteDto.email !== postulante.email) {
+      if (postulanteData.email && postulanteData.email !== postulante.email) {
         const existeEmail = await this.postulanteRepository.findOne({
-          where: { email: updatePostulanteDto.email }
+          where: { email: postulanteData.email }
         });
 
         if (existeEmail) {
-          this.logger.warn(`Email ya existe: ${updatePostulanteDto.email}`);
+          this.logger.warn(`Email ya existe: ${postulanteData.email}`);
           throw new HttpException(
             'El email ya está registrado',
             HttpStatus.CONFLICT
@@ -169,10 +181,10 @@ export class PostulanteService {
         }
       }
 
-      await this.postulanteRepository.update(id, updatePostulanteDto);
+      await this.postulanteRepository.update(id, postulanteData);
       const postulanteActualizado = await this.postulanteRepository.findOne({
         where: { postulanteID: id },
-        relations: ['documentos', 'postulaciones']
+        relations: ['documentos', 'formulario']
       });
 
       this.logger.log(`Postulante actualizado exitosamente: ${id}`);
@@ -233,7 +245,7 @@ export class PostulanteService {
       this.logger.log(`Buscando postulante por RUT: ${rut}`);
       const postulante = await this.postulanteRepository.findOne({
         where: { rut },
-        relations: ['documentos', 'postulaciones']
+        relations: ['documentos', 'formulario']
       });
 
       if (!postulante) {
@@ -267,7 +279,7 @@ export class PostulanteService {
       this.logger.log(`Buscando postulante por email: ${email}`);
       const postulante = await this.postulanteRepository.findOne({
         where: { email },
-        relations: ['documentos', 'postulaciones']
+        relations: ['documentos', 'formulario']
       });
 
       if (!postulante) {
@@ -295,54 +307,4 @@ export class PostulanteService {
       );
     }
   }
-
-  async findByEstado(estado: string) {
-    try {
-      this.logger.log(`Buscando postulantes con estado: ${estado}`);
-      const postulantes = await this.postulanteRepository.find({
-        where: { estado },
-        relations: ['documentos', 'postulaciones'],
-        order: { fechaRegistro: 'DESC' }
-      });
-
-      this.logger.log(`Se encontraron ${postulantes.length} postulantes con estado: ${estado}`);
-      return {
-        status: 200,
-        message: 'Postulantes por estado obtenidos exitosamente',
-        count: postulantes.length,
-        data: postulantes
-      };
-    } catch (error) {
-      this.logger.error(`Error al buscar postulantes por estado: ${error.message}`);
-      throw new HttpException(
-        'Error interno del servidor al buscar postulantes por estado',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
-  }
-
-  // async findByProfesion(profesion: string) {
-  //   try {
-  //     this.logger.log(`Buscando postulantes con profesión: ${profesion}`);
-  //     const postulantes = await this.postulanteRepository.find({
-  //       where: { profesion },
-  //       relations: ['documentos', 'postulaciones'],
-  //       order: { fechaRegistro: 'DESC' }
-  //     });
-
-  //     this.logger.log(`Se encontraron ${postulantes.length} postulantes con profesión: ${profesion}`);
-  //     return {
-  //       status: 200,
-  //       message: 'Postulantes por profesión obtenidos exitosamente',
-  //       count: postulantes.length,
-  //       data: postulantes
-  //     };
-  //   } catch (error) {
-  //     this.logger.error(`Error al buscar postulantes por profesión: ${error.message}`);
-  //     throw new HttpException(
-  //       'Error interno del servidor al buscar postulantes por profesión',
-  //       HttpStatus.INTERNAL_SERVER_ERROR
-  //     );
-  //   }
-  // }
 }

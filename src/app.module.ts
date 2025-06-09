@@ -12,6 +12,9 @@ import { ProyectoModule } from './components/modulo-uno/proyecto/proyecto.module
 import { ProyectoEmpresaModule } from './components/modulo-uno/proyecto-empresa/proyecto-empresa.module';
 import { AuthModule } from './auth/auth.module';
 import { PostulanteModule } from './components/modulo-dos/postulante/postulante.module';
+import { PostulacionesModule } from './components/postulaciones/postulaciones.module';
+import { RequisitosModule } from './components/requisitos/requisitos.module';
+import { FormulariosModule } from './components/formularios/formularios.module';
 
 @Module({
   imports: [
@@ -30,6 +33,10 @@ import { PostulanteModule } from './components/modulo-dos/postulante/postulante.
     RegionModule,
     ProyectoModule,
     ProyectoEmpresaModule,
+    PostulanteModule,
+    PostulacionesModule,
+    RequisitosModule,
+    FormulariosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

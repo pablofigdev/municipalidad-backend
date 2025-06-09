@@ -45,7 +45,7 @@ export class OfertaPostulante {
     @JoinColumn({ name: 'ofertaTrabajoID', referencedColumnName: 'ofertaTrabajoID' })
     ofertaTrabajo: OfertaTrabajo;
 
-    @ManyToOne(() => Postulante, (postulante) => postulante.postulaciones)
+    @ManyToOne(() => Postulante)
     @JoinColumn({ name: 'postulanteID', referencedColumnName: 'postulanteID' })
     postulante: Postulante;
 }

@@ -50,4 +50,42 @@ export class AuthController {
       data: req.user
     };
   }
+
+  @Post('logout')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Cerrar sesión' })
+  @ApiResponse({ status: 200, description: 'Logout exitoso' })
+  async logout(@Request() req) {
+    return this.authService.logout(req.user.usuarioID);
+  }
+
+  @Post('refresh')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Refrescar token JWT' })
+  @ApiResponse({ status: 200, description: 'Token refrescado exitosamente' })
+  async refreshToken(@Request() req) {
+    return this.authService.refreshToken(req.user.usuarioID);
+  }
+
+  @Post('reset-password')
+  @ApiOperation({ summary: 'Solicitar reset de contraseña' })
+  @ApiResponse({ status: 200, description: 'Email de reset enviado' })
+  async resetPassword(@Body('email') email: string) {
+    return this.authService.resetPassword(email);
+  }
+
+  @Post('change-password')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Cambiar contraseña' })
+  @ApiResponse({ status: 200, description: 'Contraseña cambiada exitosamente' })
+  async changePassword(
+    @Request() req,
+    @Body('currentPassword') currentPassword: string,
+    @Body('newPassword') newPassword: string
+  ) {
+    return this.authService.changePassword(req.user.usuarioID, currentPassword, newPassword);
+  }
 } 
