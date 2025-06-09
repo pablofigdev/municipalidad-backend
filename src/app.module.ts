@@ -11,6 +11,7 @@ import { DatabaseModule } from './database/database.module';
 import { ProyectoModule } from './components/modulo-uno/proyecto/proyecto.module';
 import { ProyectoEmpresaModule } from './components/modulo-uno/proyecto-empresa/proyecto-empresa.module';
 import { AuthModule } from './auth/auth.module';
+import { PostulanteModule } from './components/modulo-dos/postulante/postulante.module';
 
 @Module({
   imports: [
